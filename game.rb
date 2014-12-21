@@ -1,13 +1,14 @@
 require 'pry'
+require_relative 'room'
 
 def game_loop
-  describe_room
+  describe_room(Room.new('words/room_descriptions.txt'))
   choice = player_input "Say Hello", "Say Goodbye"
   game_loop unless choice == '2'
 end
 
-def describe_room
-  puts "Hello, World"
+def describe_room(room)
+  puts room.description
 end
 
 def player_input(*choices)
