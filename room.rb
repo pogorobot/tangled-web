@@ -1,24 +1,28 @@
 class Room
   attr_accessor :description, :choices
 
-  def initialize(filename)
-    self.description = random_description_from(filename)
-    self.choices = random_subset_from(choices_filename)
+  def initialize
+    self.description = random_description_from(descriptions_path)
+    self.choices = random_subset_from(choices_path)
   end
 
-  def choices_filename
+  def descriptions_path
+    'words/room_descriptions.txt'
+  end
+
+  def choices_path
     'words/choices.txt'
   end
 
-  def random_description_from(filename)
-    possible_descriptions = File.open(filename).select do |line|
+  def random_description_from(path)
+    possible_descriptions = File.open(path).select do |line|
       line.chomp.length > 0
     end
     possible_descriptions[rand(possible_descriptions.length).floor]
   end
 
-  def random_subset_from(filename)
-    File.open(filename).select do |line|
+  def random_subset_from(path)
+    File.open(path).select do |line|
       line.chomp.length > 0 && rand(100) < 75
     end
   end
@@ -29,6 +33,8 @@ class Room
 
   def results
     {
+      "Forward" => :move_forward,
+      "Backward" => :move_backward,
       "Say Goodbye" => :exit_loop,
       "Move On" => :leave_room
     }

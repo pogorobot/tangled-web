@@ -2,18 +2,24 @@ require 'pry'
 require_relative 'room'
 
 class Game
-  attr_accessor :room
-  attr_accessor :exiting
+  attr_accessor :room, :exiting, :previous_rooms, :position
+
+  def initialize
+    self.previous_rooms = []
+    self.position = 0
+  end
 
   def game_loop
     orient
     describe_room
     offer_choices
+
     game_loop unless exiting
   end
 
   def orient
-    self.room ||= Room.new('words/room_descriptions.txt')
+    self.room = previous_rooms[position] || Room.new
+    previous_rooms[position] = self.room
   end
 
   def describe_room
@@ -27,7 +33,19 @@ class Game
   end
 
   def leave_room
-    self.room = nil
+    self.position = rand(previous_rooms.length)
+  end
+
+  def move_forward
+    self.position += 1
+  end
+
+  def move_backward
+    self.position -= 1 if self.position > 0
+  end
+
+  def move_to(new_position)
+    self.position = new_position
   end
 
   def player_input(choices)
