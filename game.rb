@@ -64,9 +64,6 @@ class Game
     gets.chomp
   end
 
-  def do_nothing
-  end
-
   def exit_loop
     self.exiting = true
   end
