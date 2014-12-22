@@ -34,7 +34,7 @@ class Room
   def results
     {
       "Forward" => :move_forward,
-      "Backward" => :move_backward,
+      "Backward" => :turn_around,
       "Say Goodbye" => :exit_loop,
       "Move On" => :leave_room
     }

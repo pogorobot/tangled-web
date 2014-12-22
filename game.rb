@@ -2,11 +2,13 @@ require 'pry'
 require_relative 'room'
 
 class Game
-  attr_accessor :room, :exiting, :previous_rooms, :position
+  attr_accessor :room, :exiting, :previous_rooms, :position, :direction, :speed
 
   def initialize
     self.previous_rooms = []
     self.position = 0
+    self.direction = 1
+    self.speed = 1
   end
 
   def game_loop
@@ -37,11 +39,16 @@ class Game
   end
 
   def move_forward
-    self.position += 1
+    self.position += velocity
+    self.position = 0 if self.position < 0
   end
 
-  def move_backward
-    self.position -= 1 if self.position > 0
+  def velocity
+    self.speed * self.direction
+  end
+
+  def turn_around
+    self.direction *= -1
   end
 
   def move_to(new_position)
