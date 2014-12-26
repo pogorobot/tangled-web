@@ -1,0 +1,62 @@
+CONSTRAINTS:
+
+Two dimensional (x, y)
+One room per point
+Nothing negative - start at (0, 0)
+Constrained by a rectangle of (width, height)
+Exits match up
+No more than three exits per room
+Every room accessible from every other room
+
+Other than that, totally random
+
+PROCESS:
+
+On Maze:
+
+Set the width and height
+Initialize the grid of Rooms
+
+On Room: hey look I converted to real code
+
+def initialize(x, y)
+  @possible_configurations = all_possible_configurations
+  @x = x
+  @y = y
+end
+
+def configure
+  @configuration = @possible_configurations[rand(@possible_configurations).length]
+  if violating_constraints
+    @nogoods[@current_assumption] = @configuration
+    @possible_configurations.delete @configuration
+    if @possible_configurations.length > 0
+      configure
+    else
+      @previous_room.nogood(@current_assumption)
+    end
+  else
+    @next_room.assume(@configuration)
+  end
+end
+
+STORAGE
+
+Room:
+  @x:                                       integer from 0 to Cave.width
+  @y:                                       integer from 0 to Cave.height
+  @configuration:                           Array of Exits
+  @possible_configurations:                 Array of Arrays of Exits
+  @nogoods:                                 Array of Arrays of Exits
+  @current_assumption:                      Hash of form {Room => Array of Exits}
+  
+Exit:
+  @destination:                             Hash of form {x: integer, y: integer}
+
+Cave:
+  @height:                                  integer
+  @width:                                   integer
+
+
+
+
