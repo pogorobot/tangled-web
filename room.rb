@@ -1,15 +1,13 @@
 class Room
-  attr_accessor :description, :choices
+  attr_accessor :description
 
-  def initialize(x, y)
+  def initialize(x, y, cave)
     self.description = random_description_from(descriptions_path)
-    self.choices = random_subset_from(choices_path)
 
-    @possible_configurations = all_possible_configurations
     @x = x
     @y = y
-    @cave_width = 30
-    @cave_height = 20
+    @cave = cave
+    @possible_configurations = all_possible_configurations
   end
 
   def all_possible_configurations
@@ -25,10 +23,10 @@ class Room
     if @y > 0
       exits << {x: @x, y: @y - 1}
     end
-    if @x < @cave_width
+    if @x < @cave.width
       exits << {x: @x + 1, y: @y}
     end
-    if @y < @cave_height
+    if @y < @cave.height
       exits << {x: @x, y: @y + 1}
     end
     exits
@@ -41,7 +39,6 @@ class Room
   end
 
   def two_from(choices)
-    return unless choices.length > 1
     results = []
     choices.each do |choice|
       choices.each do |other_choice|
@@ -52,7 +49,6 @@ class Room
   end
 
   def three_from(choices)
-    return unless choices.length > 3
     results = []
     choices.each do |first_choice|
       choices.each do |second_choice|
@@ -62,6 +58,14 @@ class Room
       end
     end
     results
+  end
+
+  def constrain
+    @possible_configurations.reject! do |configuration|
+      configuration.exits.each do |exit|
+
+      end
+    end
   end
 
   def configure
@@ -75,16 +79,22 @@ class Room
         @previous_room.nogood(@current_assumption)
       end
     else
-      @next_room.assume(@configuration)
+      @next_room.assume(@configuration) #Wait that's not right, it needs the ENTIRE state
     end
+  end
+
+  def nogood(assumption)
+    @nogoods ||= []
+    @nogoods << assumption
+  end
+
+  def assume(assumption)
+    @current_assumptions = assumption
+    configure
   end
 
   def descriptions_path
     'words/room_descriptions.txt'
-  end
-
-  def choices_path
-    'words/choices.txt'
   end
 
   def random_description_from(path)
@@ -100,6 +110,17 @@ class Room
     end
   end
 
+  def choices(dx, dy)
+    choices = []
+    if @exits.include?({x: (@x + dx), y: @y + dy})
+      choices << "Forward"
+    end
+    choices << "Turn Left"
+    choices << "Turn Right"
+    choices << "Turn Around"
+    choices << "Say Goodbye"
+  end
+
   def choice(input)
     choices[input.to_i - 1].chomp
   end
@@ -107,9 +128,10 @@ class Room
   def results
     {
       "Forward" => :move_forward,
-      "Backward" => :turn_around,
+      "Turn Left" => :turn_left,
+      "Turn Right" => :turn_right,
+      "Turn Around" => :turn_around,
       "Say Goodbye" => :exit_loop,
-      "Move On" => :leave_room
     }
   end
 

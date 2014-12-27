@@ -49,6 +49,7 @@ Room:
   @possible_configurations:                 Array of Arrays of Exits
   @nogoods:                                 Array of Arrays of Exits
   @current_assumption:                      Hash of form {Room => Array of Exits}
+  @accessible                               Boolean
   
 Exit:
   @destination:                             Hash of form {x: integer, y: integer}
@@ -59,4 +60,22 @@ Cave:
 
 
 
+  def violating_constraints #omg you guys this method is so important, seriously seriously seriously
+    #currently two constraints that matter here:
+    #every room matches up
+    #aand every room accessibllle
+    #so we need to check if this particular configuration works with that
+    #to check if every exit matches, check if every room has an exit to this room
+    #to check if every room is accessible,
+    #check if this room can ... hm how do you check that hm
 
+    #haha okay I think I figured it out
+    #basically you have to check if it's theoretically possible that this room could connect to something that
+    #connects to something that connects to Room One
+    #so for each exit:
+    #if the room it exits to is @connectable
+    #you're good
+    #if the room it exits to is a descendant -ie lower on the stack
+    #you're also good, on the assumption that someone down there will figure it out
+    #if no exit has those properties, you're not good
+  end
