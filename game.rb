@@ -6,9 +6,10 @@ class Game
   attr_accessor :room, :exiting, :x, :y, :dx, :dy
 
   def initialize
-    @cave = Cave.new(20, 20)
-    self.x = rand(20)
-    self.y = rand(20)
+
+    @cave = Cave.new(4, 4)
+    self.x = rand(4)
+    self.y = rand(4)
     self.dx = 1
     self.dy = 0
   end
@@ -30,9 +31,24 @@ class Game
   end
 
   def offer_choices
-    choice = player_input self.room.choices(self.dx, self.dy)
-    result = self.room.result(choice)
-    self.send(result) if result
+    choices = self.room.choices(self.dx, self.dy)
+    choice = player_input choices
+    chosen = choices[choice.to_i-1]
+    self.send(result(chosen))
+  end
+
+  def results
+    {
+      "Forward" => :move_forward,
+      "Turn Left" => :turn_left,
+      "Turn Right" => :turn_right,
+      "Turn Around" => :turn_around,
+      "Say Goodbye" => :exit_loop,
+    }
+  end
+
+  def result(input)
+    results[input]
   end
 
   def move_forward
