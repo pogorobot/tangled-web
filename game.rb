@@ -7,8 +7,8 @@ class Game
 
   def initialize
 
-    @cave = Cave.new(4, 4)
-    self.x = rand(4)
+    @cave = Cave.new(30, 5)
+    self.x = rand(10)
     self.y = rand(4)
     self.dx = 1
     self.dy = 0
@@ -24,6 +24,7 @@ class Game
 
   def orient
     self.room = @cave.at(self.x, self.y)
+    puts "x: #{x}, y: #{y}"
   end
 
   def describe_room

@@ -1,11 +1,11 @@
 class Room
-  attr_accessor :description, :id, :accessible
+  attr_accessor :description, :id, :accessible, :x, :y
 
   def initialize(x, y, cave, id)
     self.description = random_description_from(descriptions_path)
 
-    @x = x
-    @y = y
+    self.x = x
+    self.y = y
     @cave = cave
     @possible_configurations = all_possible_configurations
     self.accessible = (x == 0 && y == 0)
@@ -19,17 +19,17 @@ class Room
 
   def all_possible_exits
     exits = []
-    if @x > 0
-      exits << {x: @x - 1, y: @y}
+    if self.x > 0
+      exits << {x: self.x - 1, y: self.y}
     end
-    if @y > 0
-      exits << {x: @x, y: @y - 1}
+    if self.y > 0
+      exits << {x: self.x, y: self.y - 1}
     end
-    if @x < @cave.width - 1
-      exits << {x: @x + 1, y: @y}
+    if self.x < @cave.width - 1
+      exits << {x: self.x + 1, y: self.y}
     end
-    if @y < @cave.height - 1
-      exits << {x: @x, y: @y + 1}
+    if self.y < @cave.height - 1
+      exits << {x: self.x, y: self.y + 1}
     end
     exits
   end
@@ -63,20 +63,20 @@ class Room
   end
 
   def previous_room
-    if @x > 0
-      return @cave.at(@x - 1, @y)
-    elsif @y > 0
-      return @cave.at(@cave.width - 1, @y - 1)
+    if self.x > 0
+      return @cave.at(self.x - 1, self.y)
+    elsif self.y > 0
+      return @cave.at(@cave.width - 1, self.y - 1)
     else
       return self
     end
   end
 
   def next_room
-    if @x < @cave.width - 1
-      return @cave.at(@x + 1, @y)
-    elsif @y < @cave.height - 1
-      return @cave.at(0, @y + 1)
+    if self.x < @cave.width - 1
+      return @cave.at(self.x + 1, self.y)
+    elsif self.y < @cave.height - 1
+      return @cave.at(0, self.y + 1)
     else
       return self
     end
@@ -89,12 +89,12 @@ class Room
   end
 
   def asymmetrical?(configuration)
-    configuration.each do |exit|
+    all_possible_exits.each do |exit|
       room = @cave.at(exit[:x], exit[:y])
-      return false if room.id > self.id
-      return true if room.has_exit?(@x, @y)
+      next if room.id > self.id
+      next if room.has_exit?(self.x, self.y) == configuration.include?(exit)
+      return true
     end
-    #and then also check that walls are walled
     return false
   end
 
@@ -128,9 +128,7 @@ class Room
       set_accessible!
       if next_room == self
         puts "Success!"
-        return
       end
-      next_room.configure
     end
   end
 
@@ -145,6 +143,7 @@ class Room
   def nogood
     @possible_configurations.delete(@exits)
     configure
+    next_room.configure unless next_room == self
   end
 
   def descriptions_path
@@ -166,7 +165,7 @@ class Room
 
   def choices(dx, dy)
     choices = []
-    if @exits.include?({x: (@x + dx), y: @y + dy})
+    if @exits.include?({x: (self.x + dx), y: self.y + dy})
       choices << "Forward"
     end
     choices << "Turn Left"

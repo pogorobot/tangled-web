@@ -16,7 +16,37 @@ class Cave
         id += 1
       end
     end
-    at(0, 0).configure
+    @grid.each do |row|
+      row.each do |room|
+        room.configure
+      end
+    end
+    draw_map
+  end
+
+  def draw_map
+    @grid.each do |row|
+      row.each do |room|
+        if room.has_exit?(room.x, room.y - 1)
+          print "*."
+        else
+          print "**"
+        end
+      end
+      puts "*"
+      row.each do |room|
+        if room.has_exit?(room.x - 1, room.y)
+          print ". "
+        else
+          print "* "
+        end
+      end
+      puts "*"
+    end
+    @grid[0].each do |column|
+      print "**"
+    end
+    puts "*"
   end
 
   def at(x, y)
